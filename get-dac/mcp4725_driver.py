@@ -31,21 +31,24 @@ class MCP4725:
         if not (0.0 <= voltage <= self.dynamic_range):
             print(f"Напряжение выходит за динамический диапазон ЦАП 0.00-{dynamic_range:.2f} В")
             print("Устанавливаем 0.0 В")
-            return 0
-        a=int(voltage*4095/self.dynamic_range)
-        self.set_number(a)
+            num = 0
+        else:
+            num=int(voltage/self.dynamic_range*4095)
+        return num
     
 if __name__=="__main__":
-    mcp=MCP4725(5.15, True)
+    
     try:
+        dac=MCP4725(5, 0x61, True)
         while True:
             try:
                 voltage = float(input("Введите напряжение в вольтах: "))
-                mcp.set_voltage(voltage)
+                num = dac.set_voltage(voltage)
+                dac.set_number(num)
 
             except ValueError:
                 print("Вы ввели не число. Попробуйте еще раз\n")
     finally:
-        mcp.deinit()
+        dac.deinit()
 
 
