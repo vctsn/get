@@ -14,12 +14,8 @@ def dec2bin(num):
         return [int(element) for element in bin(num)[2:].zfill(8)]
 
 def number_to_dac(number):
-    for i in range(len(dec2bin(number))):
-        if dec2bin(number)[i] == 1:
-            GPIO.output(dac_bits[i], 1)
-        else:
-            GPIO.output(dac_bits[i], 0)
-    print(number, dec2bin(number))
+    binary = [int(element) for element in bin(number)[2:].zfill(8)]
+    GPIO.output(dac_bits, binary)
 
 try:
     while True:
