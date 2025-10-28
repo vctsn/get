@@ -1,6 +1,7 @@
 import time
 import RPi.GPIO as GPIO
 import matplotlib.pyplot as plt
+import numpy as np
 
 class R2R_ADC:
     def __init__(self, dynamic_range, compare_time=0.01, verbose=False):
@@ -40,9 +41,23 @@ def plot_voltage_vs_time(time, voltage, max_voltage):
     plt.xlabel('Время, с')
     plt.ylabel('Напряжение, В')
     plt.xlim(0, max(time) if time else 1)
-    plt.xlim(0, max_voltage)
+    plt.ylim(0, max_voltage)
     plt.grid(True, alpha=0.3)
     plt.show()
+
+def plot_sampling_period_hist(time):
+    dt = []
+    for i in range (1, len(time)-1):
+        dt.append(time[i]-time[i-1])
+    plt.figure(figsize=(10,6))
+    plt.hist(dt, bins = np.arange(0, 0.06, 0.001))
+    plt.title('Распредление периодов дискретизации измерений по времени на одно измерение')
+    plt.xlabel('Период измерения, с')
+    plt.ylabel('Количество измерений')
+    plt.xlim(0, 0.06)
+    plt.grid(True, alpha=0.3)
+    plt.show()
+    
         
 
 if __name__=="__main__":
@@ -59,6 +74,7 @@ if __name__=="__main__":
             current_time=time.time() - start_time
             time_values.append(current_time)
         plot_voltage_vs_time(time_values, voltage_values, adc.dynamic_range)
+        plot_sampling_period_hist(time_values)
     finally:
         adc.deinit()
         GPIO.cleanup()
